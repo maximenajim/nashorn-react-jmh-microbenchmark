@@ -1,5 +1,5 @@
 # nashorn-react-jmh-microbenchmark
-Java Microbenchmark Harness (jmh) test for server-side rendering of a simple react component using Java 8's Nashorn.
+Java Microbenchmark Harness ([jhm](http://openjdk.java.net/projects/code-tools/jmh)) test for server-side rendering of a simple react component using Java 8's Nashorn.
 
 ## Running the benchmark
 Compiling the benchmark
