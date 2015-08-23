@@ -1,6 +1,6 @@
 package com.github.maximenajim;
 
-import jdk.nashorn.api.scripting.NashornScriptEngine;
+import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Mode;
@@ -10,7 +10,8 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import javax.script.ScriptEngineManager;
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -23,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 public class ReactMicroBenchmark {
 
     static final int NUM_COMMENTS = 10;
-    static NashornScriptEngine nashornScriptEngine = setupNashornScriptEngine();
+    static Invocable nashornScriptEngine = (Invocable) setupNashornScriptEngine();
     static List<Comment> comments = generateComments(NUM_COMMENTS);
 
     public static void main(String[] args) throws RunnerException {
@@ -63,16 +64,17 @@ public class ReactMicroBenchmark {
         return comments;
     }
 
-    private static NashornScriptEngine setupNashornScriptEngine() throws RuntimeException {
-        NashornScriptEngine nashornScriptEngine = (NashornScriptEngine) new ScriptEngineManager().getEngineByName("nashorn");
+    private static ScriptEngine setupNashornScriptEngine() throws RuntimeException {
+        NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
+        ScriptEngine engine = factory.getScriptEngine("--optimistic-types=true");
         try {
-            nashornScriptEngine.eval(read("nashorn-polyfill.js"));
-            nashornScriptEngine.eval(read("react.js"));
-            nashornScriptEngine.eval(read("commentBox.js"));
+            engine.eval(read("nashorn-polyfill.js"));
+            engine.eval(read("react.js"));
+            engine.eval(read("commentBox.js"));
         } catch (ScriptException e) {
             throw new RuntimeException(e);
         }
-        return nashornScriptEngine;
+        return engine;
     }
 
     public static class Comment {
